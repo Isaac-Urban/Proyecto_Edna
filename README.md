@@ -1,2 +1,2 @@
 # Proyecto_Herramientas
-Proyecto Herramientas multimedia - Edna Miranda
+Proyecto Herramientas Automatizadas - Edna Miranda
