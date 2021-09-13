@@ -4,7 +4,9 @@ package empresa;
 public class Empresa {
 
     public static void main(String[] args) {
-        System.out.println("Hola bro");
+        Empleado n1 = new Empleado(); 
+        n1.registro("Isaac", 19);
+        System.out.println(n1);
     }
     
 }
