@@ -5,7 +5,12 @@
  */
 package login;
 
+import Clases.Conexion;
+import java.sql.*;
+
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -13,11 +18,48 @@ import javax.swing.JOptionPane;
  */
 public class Usuarios extends javax.swing.JFrame {
     int xMouse, yMouse;
-    /**
-     * Creates new form Usuarios
-     */
+    
+    
+    DefaultTableModel tabla = new DefaultTableModel(); 
+    
     public Usuarios() {
         initComponents();
+        
+        try{
+            //rutaynombreBD/nombreUsuarioBD/contraseñaBD
+            Connection cn = Conexion.conectar(); 
+            PreparedStatement pst = cn.prepareStatement("select ID, Cantidad, Tipo, Descripcion, PrecioU, Importe from productos");
+            ResultSet rs = pst.executeQuery(); 
+            
+            //estableccemos la tabla y la colocamos dentro de un scroll
+            JT_productos = new JTable(tabla); 
+            JS_tabla.setViewportView(JT_productos);
+            
+            //establecemos las columnas 
+            tabla.addColumn("ID");
+            tabla.addColumn("Cantidad");
+            tabla.addColumn("Tipo");
+            tabla.addColumn("Descripcion");
+            tabla.addColumn("PrecioU");
+            tabla.addColumn("Importe");
+            
+            //mientras encuentre concidencias que repita el proceso
+            while(rs.next()){
+                //tipo object asi lo requiere la tabla
+                Object[] fila = new Object[6];
+                //for para rellenar las filas
+                for(int i=0; i<6; i++){
+                    fila[i] = rs.getObject(i + 1); 
+                }
+                tabla.addRow(fila);
+            }
+            cn.close();
+            
+        }catch(SQLException e){
+            System.err.print("Error al llenar tabla!");
+            JOptionPane.showMessageDialog(this, "Error al mostrar la información!");
+        }
+        
     }
 
     /**
@@ -51,8 +93,9 @@ public class Usuarios extends javax.swing.JFrame {
         JL_BUSCAR = new javax.swing.JLabel();
         txt_buscar = new javax.swing.JTextField();
         jb_buscar = new javax.swing.JButton();
-        lb_estatus = new javax.swing.JLabel();
         jb_limpiar = new javax.swing.JButton();
+        JS_tabla = new javax.swing.JScrollPane();
+        JT_productos = new javax.swing.JTable();
         JP_IZQUIERDO = new javax.swing.JPanel();
         JL_logo = new javax.swing.JLabel();
         JL_INFO = new javax.swing.JLabel();
@@ -67,7 +110,7 @@ public class Usuarios extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(949, 956));
+        setPreferredSize(new java.awt.Dimension(950, 820));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -197,14 +240,29 @@ public class Usuarios extends javax.swing.JFrame {
             }
         });
 
-        lb_estatus.setFont(new java.awt.Font("sansserif", 1, 18)); // NOI18N
-
         jb_limpiar.setText("Limpiar");
         jb_limpiar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jb_limpiarActionPerformed(evt);
             }
         });
+
+        JS_tabla.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.lightGray, java.awt.Color.lightGray, java.awt.Color.lightGray, java.awt.Color.lightGray));
+        JS_tabla.setForeground(new java.awt.Color(0, 0, 0));
+
+        JT_productos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.lightGray, java.awt.Color.lightGray, java.awt.Color.lightGray, java.awt.Color.lightGray));
+        JT_productos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        JS_tabla.setViewportView(JT_productos);
 
         javax.swing.GroupLayout JP_DERECHOLayout = new javax.swing.GroupLayout(JP_DERECHO);
         JP_DERECHO.setLayout(JP_DERECHOLayout);
@@ -213,48 +271,50 @@ public class Usuarios extends javax.swing.JFrame {
             .addComponent(JP_TITULO, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(JP_DERECHOLayout.createSequentialGroup()
                 .addGap(37, 37, 37)
-                .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(JP_DERECHOLayout.createSequentialGroup()
-                        .addComponent(JL_BUSCAR)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(JP_DERECHOLayout.createSequentialGroup()
-                        .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(JL_TIPO)
-                            .addComponent(JL_DESCRIPCION)
-                            .addComponent(JL_CANTIDAD)
-                            .addComponent(JL_PRECIO)
-                            .addComponent(JL_IMPORTE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txt_precio)
-                                .addComponent(txt_cantidad, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txt_importe, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txt_tipo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txt_descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(46, 46, 46))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JP_DERECHOLayout.createSequentialGroup()
-                .addGap(74, 74, 74)
-                .addComponent(jb_registro, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jb_modificar, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(99, 99, 99)
-                .addComponent(jb_eliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(88, 88, 88))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JP_DERECHOLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JP_DERECHOLayout.createSequentialGroup()
-                        .addComponent(txt_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(46, 46, 46))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JP_DERECHOLayout.createSequentialGroup()
-                        .addComponent(jb_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(105, 105, 105)
-                        .addComponent(jb_limpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(195, 195, 195))))
+                    .addGroup(JP_DERECHOLayout.createSequentialGroup()
+                        .addComponent(JS_tabla, javax.swing.GroupLayout.PREFERRED_SIZE, 631, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(32, Short.MAX_VALUE))
+                    .addGroup(JP_DERECHOLayout.createSequentialGroup()
+                        .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(JL_BUSCAR)
+                            .addGroup(JP_DERECHOLayout.createSequentialGroup()
+                                .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(JL_TIPO)
+                                    .addComponent(JL_DESCRIPCION)
+                                    .addComponent(JL_CANTIDAD)
+                                    .addComponent(JL_PRECIO)
+                                    .addComponent(JL_IMPORTE))
+                                .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(JP_DERECHOLayout.createSequentialGroup()
+                                        .addGap(16, 16, 16)
+                                        .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txt_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txt_cantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txt_descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(JP_DERECHOLayout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txt_importe, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txt_precio, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JP_DERECHOLayout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txt_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(JP_DERECHOLayout.createSequentialGroup()
-                .addGap(169, 169, 169)
-                .addComponent(lb_estatus, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(JP_DERECHOLayout.createSequentialGroup()
+                        .addGap(74, 74, 74)
+                        .addComponent(jb_registro, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(106, 106, 106)
+                        .addComponent(jb_modificar, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(103, 103, 103)
+                        .addComponent(jb_eliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(JP_DERECHOLayout.createSequentialGroup()
+                        .addGap(183, 183, 183)
+                        .addComponent(jb_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(116, 116, 116)
+                        .addComponent(jb_limpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         JP_DERECHOLayout.setVerticalGroup(
@@ -284,9 +344,9 @@ public class Usuarios extends javax.swing.JFrame {
                     .addComponent(JL_IMPORTE))
                 .addGap(30, 30, 30)
                 .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jb_eliminar)
                     .addComponent(jb_modificar)
-                    .addComponent(jb_registro))
+                    .addComponent(jb_registro)
+                    .addComponent(jb_eliminar))
                 .addGap(32, 32, 32)
                 .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -295,12 +355,12 @@ public class Usuarios extends javax.swing.JFrame {
                 .addGroup(JP_DERECHOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jb_limpiar)
                     .addComponent(jb_buscar))
-                .addGap(47, 47, 47)
-                .addComponent(lb_estatus, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(285, Short.MAX_VALUE))
+                .addGap(33, 33, 33)
+                .addComponent(JS_tabla, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(37, Short.MAX_VALUE))
         );
 
-        getContentPane().add(JP_DERECHO, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 0, 700, 960));
+        getContentPane().add(JP_DERECHO, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 0, 700, 820));
 
         JP_IZQUIERDO.setBackground(new java.awt.Color(236, 234, 228));
 
@@ -417,7 +477,7 @@ public class Usuarios extends javax.swing.JFrame {
                 .addComponent(JL_SALIR)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(JS_3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 401, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 261, Short.MAX_VALUE)
                 .addGroup(JP_IZQUIERDOLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(JL_IPN, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JL_UPI, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -426,7 +486,7 @@ public class Usuarios extends javax.swing.JFrame {
                 .addGap(21, 21, 21))
         );
 
-        getContentPane().add(JP_IZQUIERDO, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 310, 960));
+        getContentPane().add(JP_IZQUIERDO, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 310, 820));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -462,9 +522,9 @@ public class Usuarios extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_cantidadActionPerformed
 
     private void jb_registroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jb_registroActionPerformed
-      /*  try{
+        try{
             //rutaynombreBD/nombreUsuarioBD/contraseñaBD
-            Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/mecatenasoftware", "root", "");
+            Connection cn = Conexion.conectar();
             PreparedStatement pst = cn.prepareStatement("insert into productos values(?,?,?,?,?,?)");
             //enviamos los campos a la base de datos
             pst.setString(1, "0");
@@ -488,12 +548,12 @@ public class Usuarios extends javax.swing.JFrame {
 
         }catch (Exception e){
 
-        }*/
+        }
     }//GEN-LAST:event_jb_registroActionPerformed
 
     private void jb_buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jb_buscarActionPerformed
-       /* try{
-            Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/mecatenasoftware", "root", "");
+        try{
+            Connection cn = Conexion.conectar();
             //* significa que seleccione todo ---importante la ortagrafia, deben coincidir los nombres
             PreparedStatement pst = cn.prepareStatement("select * from productos where ID =?");
             pst.setString(1, txt_buscar.getText().trim());
@@ -507,7 +567,7 @@ public class Usuarios extends javax.swing.JFrame {
                 txt_cantidad.setText(rs.getString("Cantidad"));
                 txt_tipo.setText(rs.getString("Tipo"));
                 txt_descripcion.setText(rs.getString("Descripcion"));
-                txt_precio.setText(rs.getString("Precio Unitario"));
+                txt_precio.setText(rs.getString("PrecioU"));
                 txt_importe.setText(rs.getString("Importe"));
             }else{
                 JOptionPane.showMessageDialog(null, "¡PRODUCTO NO REGISTRADO!");
@@ -515,7 +575,7 @@ public class Usuarios extends javax.swing.JFrame {
 
         }catch (Exception e){
 
-        }*/
+        }
     }//GEN-LAST:event_jb_buscarActionPerformed
 
     private void jb_limpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jb_limpiarActionPerformed
@@ -526,7 +586,7 @@ public class Usuarios extends javax.swing.JFrame {
         txt_precio.setText("");
         txt_importe.setText("");
         txt_buscar.setText("");
-        lb_estatus.setText(" ");
+        //lb_estatus.setText(" ");
 
     }//GEN-LAST:event_jb_limpiarActionPerformed
 
@@ -629,12 +689,13 @@ public class Usuarios extends javax.swing.JFrame {
     private javax.swing.JSeparator JS_1;
     private javax.swing.JSeparator JS_2;
     private javax.swing.JSeparator JS_3;
+    private javax.swing.JScrollPane JS_tabla;
+    private javax.swing.JTable JT_productos;
     private javax.swing.JButton jb_buscar;
     private javax.swing.JButton jb_eliminar;
     private javax.swing.JButton jb_limpiar;
     private javax.swing.JButton jb_modificar;
     private javax.swing.JButton jb_registro;
-    private javax.swing.JLabel lb_estatus;
     private javax.swing.JPanel p_barra;
     private javax.swing.JPanel p_cierre;
     private javax.swing.JTextField txt_buscar;
